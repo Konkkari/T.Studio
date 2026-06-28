@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T.Studio — B · Monolith v2 · Glass</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/base.css">
+
+    <style>
+        /* ============ B v2 · MONOLITH GLASS ============
+           - Real glossy daisy as the persistent chrome subject.
+           - True parallax: subject drifts at ~0.4× of content scroll.
+           - Glass panels (backdrop-filter blur) hold copy so the
+             gloss is visible THROUGH the UI — no opaque blackout.
+           - Subtle chromatic aberration & sheen on type. */
+
+        body {
+            background: #000;
+        }
+
+        /* ---- Persistent chrome subject ---- */
+        .subject-stage {
+            position: fixed;
+            inset: -8vh -10vw -8vh -10vw;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .subject-image {
+            position: absolute;
+            left: 50%;
+            top: 12%;                       /* anchored lower in viewport so it survives scroll */
+            transform: translateX(-50%);
+            width: min(85vh, 95vw);
+            aspect-ratio: 480 / 720;
+            background-image: url('images/glossyflower_cleanup.jpg');
+            background-size: contain;
+            background-position: center center;
+            background-repeat: no-repeat;
+            mix-blend-mode: screen;          /* image's near-black blends seamlessly into page #000 */
+            filter: contrast(1.22) saturate(0.4) brightness(1.08);
+        }
+
+        /* Big bright bloom hugging the subject (cuts the void) */
+        .subject-bloom {
+            position: absolute;
+            inset: 12% 18%;
+            background:
+                radial-gradient(ellipse at 50% 38%, rgba(236, 232, 223, 0.22) 0%, rgba(236, 232, 223, 0.05) 40%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+        }
+
+        /* Light leak from upper left — adds depth */
+        .subject-leak {
+            position: fixed;
+            top: -20vh;
+            left: -20vw;
+            width: 80vw;
+            height: 80vh;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 30% 30%, rgba(200, 220, 255, 0.08) 0%, transparent 50%);
+            filter: blur(60px);
+        }
+
+        /* Lens-flare warm streak at lower-right (mirrors the daisy's bottom-right caustic) */
+        .subject-flare {
+            position: fixed;
+            bottom: -15vh;
+            right: -10vw;
+            width: 70vw;
+            height: 70vh;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 70% 70%, rgba(255, 220, 180, 0.10) 0%, transparent 55%);
+            filter: blur(50px);
+        }
+
+        /* Cinematic vignette — anchors the eye on the subject */
+        .void-veil {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.9) 100%);
+        }
+
+        /* Grain / texture — keeps gloss from feeling clinical */
+        .grain {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.045;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+
+        /* All content above subject + veil */
+        .nav, .hero, .work, .studio, .contact, .footer {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* ===== GLASS PANEL — used by Work/Studio/Contact ===== */
+        .glass {
+            background: linear-gradient(180deg, rgba(14,14,16,0.42) 0%, rgba(8,8,10,0.55) 100%);
+            backdrop-filter: blur(22px) saturate(1.1);
+            -webkit-backdrop-filter: blur(22px) saturate(1.1);
+            border: 1px solid rgba(236, 232, 223, 0.08);
+            box-shadow:
+                inset 0 1px 0 rgba(236, 232, 223, 0.12),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+                0 30px 60px rgba(0, 0, 0, 0.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Specular sheen running across glass panels */
+        .glass::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(236, 232, 223, 0.06) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* ---- HERO ---- */
+        .hero {
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--nav-h) var(--pad-x) clamp(2rem, 5vw, 4rem);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-marks {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: clamp(2rem, 4vw, 3rem);
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.85);
+            text-shadow: 0 0 22px rgba(0, 0, 0, 0.95);
+        }
+
+        .hero-marks .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--chrome);
+            box-shadow: 0 0 8px rgba(236, 232, 223, 0.8);
+        }
+
+        /* Glossy chrome text — vertical gradient with bright highlight band */
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6.5vw, 6rem);
+            font-weight: 700;
+            line-height: 0.94;
+            letter-spacing: 0.005em;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(180deg,
+                #d8d4c8 0%,
+                #f7f3e7 18%,
+                #ffffff 35%,
+                #ada9a0 52%,
+                #535148 75%,
+                #f3efe2 92%,
+                #aaa69d 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            filter: drop-shadow(0 2px 30px rgba(0, 0, 0, 0.9));
+        }
+
+        .hero-title-line {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 0.05em;
+        }
+
+        .hero-word { display: inline-block; }
+
+        .hero-word.italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 300;
+            text-transform: none;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg,
+                #cfcabe 0%,
+                #ffffff 30%,
+                #aaa69b 60%,
+                #efeadb 90%,
+                #807c72 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-meta {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            max-width: 720px;
+            margin-top: clamp(2.5rem, 5vw, 4rem);
+        }
+
+        .hero-meta-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(236, 232, 223, 0.55), transparent);
+        }
+
+        .hero-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.85);
+            line-height: 1.6;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 0 22px rgba(0, 0, 0, 0.95);
+        }
+
+        .hero-tagline em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 1.1em;
+            color: var(--chrome-warm);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: clamp(1.5rem, 3vw, 2.5rem);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.5625rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.6);
+            z-index: 5;
+            text-shadow: 0 0 18px rgba(0, 0, 0, 0.95);
+        }
+
+        .hero-scroll-line {
+            width: 1px;
+            height: 48px;
+            background: rgba(236, 232, 223, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-scroll-line::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to bottom, transparent, var(--chrome));
+            animation: scroll-travel 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll-travel {
+            0%   { top: -50%; }
+            100% { top: 150%; }
+        }
+
+        /* ===== WORK / STUDIO / CONTACT — sit inside glass shells ===== */
+
+        .work, .studio, .contact {
+            padding: clamp(4rem, 8vw, 10rem) var(--pad-x);
+        }
+
+        .work-inner, .studio-inner, .contact-inner {
+            max-width: var(--max-w);
+            margin: 0 auto;
+        }
+
+        /* Work — glass-cased project cards (compact 3-up grid) */
+        .work-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            background: transparent;
+        }
+
+        /* ----- ROWS layout (1 per row, horizontal split) ----- */
+        body[data-work-layout="rows"] .work-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        body[data-work-layout="rows"] .project {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+        }
+        body[data-work-layout="rows"] .project-visual {
+            aspect-ratio: auto;
+            min-height: 280px;
+        }
+        body[data-work-layout="rows"] .project-body {
+            padding: clamp(1.75rem, 2.6vw, 2.5rem);
+            gap: 0.6rem;
+        }
+        body[data-work-layout="rows"] .project-index {
+            font-size: clamp(2.5rem, 4vw, 3.75rem);
+            color: rgba(236, 232, 223, 0.10);
+        }
+        body[data-work-layout="rows"] .project-title {
+            font-size: clamp(1.5rem, 2.2vw, 2rem);
+            margin-top: auto;
+        }
+        body[data-work-layout="rows"] .project-excerpt {
+            font-size: 0.875rem;
+            line-height: 1.75;
+            max-width: 420px;
+        }
+
+        /* ----- SCROLLER layout (horizontal rail aligned with section header) ----- */
+        body[data-work-layout="scroller"] .work-list {
+            display: flex;
+            flex-direction: row;
+            grid-template-columns: none;
+            gap: 1.25rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            scroll-snap-type: none;
+            padding: 0.5rem 0 2rem 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            scrollbar-color: transparent transparent;
+        }
+        body[data-work-layout="scroller"] .work-list::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+        body[data-work-layout="scroller"] .project {
+            flex: 0 0 clamp(420px, 42vw, 620px);
+            aspect-ratio: 4 / 3;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+        }
+        body[data-work-layout="scroller"] .scroller-hint {
+            display: none;
+        }
+
+        /* Image fills the entire card */
+        body[data-work-layout="scroller"] .project-visual {
+            position: absolute;
+            inset: 0;
+            aspect-ratio: auto;
+            min-height: 0;
+            padding: 1.25rem;
+        }
+
+        /* Body becomes a glass overlay that slides up from the bottom on hover */
+        body[data-work-layout="scroller"] .project-body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1.25rem 1.5rem 1.5rem;
+            background: linear-gradient(180deg,
+                rgba(10, 10, 12, 0) 0%,
+                rgba(10, 10, 12, 0.78) 30%,
+                rgba(8, 8, 10, 0.95) 100%);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            transform: translateY(calc(100% - 4.25rem));
+            transition: transform 0.55s var(--ease-out);
+            z-index: 2;
+            gap: 0.4rem;
+        }
+        body[data-work-layout="scroller"] .project:hover .project-body {
+            transform: translateY(0);
+        }
+
+        /* Show index + year inside the slide-up panel, hidden in the peek */
+        body[data-work-layout="scroller"] .project-top {
+            order: 2;
+            margin: 0;
+            opacity: 0;
+            transition: opacity 0.4s var(--ease-out);
+        }
+        body[data-work-layout="scroller"] .project-title {
+            order: 1;
+            font-size: 1.15rem;
+            margin: 0;
+            line-height: 1.15;
+        }
+        body[data-work-layout="scroller"] .project-category { order: 3; }
+        body[data-work-layout="scroller"] .project-excerpt  { order: 4; }
+        body[data-work-layout="scroller"] .project-cta      { order: 5; }
+        body[data-work-layout="scroller"] .project-index {
+            font-size: 0.9375rem;
+            color: rgba(236, 232, 223, 0.45);
+            line-height: 1;
+        }
+        body[data-work-layout="scroller"] .project:hover .project-top {
+            opacity: 1;
+            transition-delay: 0.18s;
+        }
+        body[data-work-layout="scroller"] .project-category,
+        body[data-work-layout="scroller"] .project-excerpt,
+        body[data-work-layout="scroller"] .project-cta {
+            opacity: 0;
+            transition: opacity 0.4s var(--ease-out) 0.05s;
+        }
+        body[data-work-layout="scroller"] .project:hover .project-category,
+        body[data-work-layout="scroller"] .project:hover .project-excerpt,
+        body[data-work-layout="scroller"] .project:hover .project-cta {
+            opacity: 1;
+            transition-delay: 0.15s;
+        }
+
+        /* Clones are display:none unless we are in scroller mode */
+        body:not([data-work-layout="scroller"]) .project[data-clone="true"] {
+            display: none;
+        }
+
+        /* Hint that appears in scroller mode */
+        .scroller-hint {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.4);
+        }
+        .scroller-hint-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(236,232,223,0.25), transparent);
+            max-width: 120px;
+        }
+        .scroller-hint-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            animation: scroller-nudge 2.4s ease-in-out infinite;
+        }
+        @keyframes scroller-nudge {
+            0%, 100% { transform: translateX(0); opacity: 0.6; }
+            50%      { transform: translateX(6px); opacity: 1; }
+        }
+
+        .project {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(14,14,16,0.55) 0%, rgba(8,8,10,0.68) 100%);
+            backdrop-filter: blur(22px) saturate(1.1);
+            -webkit-backdrop-filter: blur(22px) saturate(1.1);
+            border: 1px solid rgba(236, 232, 223, 0.09);
+            box-shadow:
+                inset 0 1px 0 rgba(236, 232, 223, 0.14),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.65),
+                0 40px 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+            transition: transform 0.6s var(--ease-out), border-color 0.5s;
+        }
+
+        .project::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(236, 232, 223, 0.05) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .project:hover {
+            border-color: rgba(236, 232, 223, 0.20);
+            transform: translateY(-2px);
+        }
+
+        .project-visual {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            background:
+                repeating-linear-gradient(135deg,
+                    rgba(236,232,223,0.04) 0px,
+                    rgba(236,232,223,0.04) 2px,
+                    transparent 2px,
+                    transparent 14px),
+                radial-gradient(ellipse at 50% 50%, rgba(236,232,223,0.08) 0%, transparent 65%),
+                rgba(20, 20, 22, 0.5);
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+            z-index: 1;
+        }
+
+        .project-image {
+            position: absolute;
+            inset: 0;
+            background: inherit;
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+            transition: transform 0.9s var(--ease-out);
+        }
+
+        .project:hover .project-image {
+            transform: scale(1.04);
+        }
+
+        .project-image::after {
+            content: attr(data-label);
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--white-40);
+        }
+
+        .project-image-sheen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.06) 0%,
+                transparent 50%,
+                rgba(0, 0, 0, 0.25) 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .project:hover .project-image-sheen { opacity: 1; }
+
+        .project-body {
+            padding: 1.5rem clamp(1.25rem, 1.6vw, 1.75rem) 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            gap: 0.5rem;
+        }
+
+        .project-top {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .project-index {
+            font-family: var(--font-display);
+            font-size: 1.625rem;
+            font-weight: 700;
+            color: rgba(236, 232, 223, 0.18);
+            line-height: 0.85;
+            letter-spacing: 0.02em;
+        }
+
+        .project-year {
+            font-family: var(--font-mono);
+            font-size: 0.5625rem;
+            letter-spacing: 0.20em;
+            text-transform: uppercase;
+            color: var(--white-40);
+        }
+
+        .project-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            margin: 0.25rem 0 0;
+            color: var(--chrome);
+        }
+
+        .project-title .italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: -0.01em;
+            color: var(--chrome-warm);
+        }
+
+        .project-category {
+            font-family: var(--font-mono);
+            font-size: 0.5625rem;
+            color: var(--white-50);
+            letter-spacing: 0.18em;
+            margin: 0 0 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .project-excerpt {
+            font-size: 0.8125rem;
+            color: var(--white-60);
+            line-height: 1.6;
+            margin: 0 0 1.25rem;
+            max-width: none;
+            font-weight: 300;
+        }
+
+        .project-excerpt em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--chrome);
+        }
+
+        .project-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.5625rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--white-60);
+            margin-top: auto;
+            width: fit-content;
+            transition: gap 0.35s var(--ease-out), color 0.3s;
+        }
+
+        .project:hover .project-cta {
+            color: var(--chrome);
+            gap: 1rem;
+        }
+
+        /* Studio — glass card */
+        .studio-shell {
+            padding: clamp(3rem, 6vw, 5rem);
+            border-radius: 2px;
+        }
+
+        .studio-statement {
+            margin-bottom: clamp(3rem, 6vw, 6rem);
+            max-width: 920px;
+        }
+
+        .studio-quote {
+            font-family: var(--font-serif);
+            font-size: clamp(1.625rem, 3.2vw, 2.75rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.35;
+            color: var(--chrome);
+            text-wrap: pretty;
+        }
+
+        .studio-quote .accent {
+            font-family: var(--font-display);
+            font-style: normal;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.86em;
+            color: var(--chrome-warm);
+        }
+
+        .studio-quote em {
+            color: var(--chrome);
+            font-weight: 400;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(3rem, 6vw, 6rem);
+            align-items: start;
+        }
+
+        .studio-rule {
+            width: 32px;
+            height: 1px;
+            background: var(--chrome);
+            margin-bottom: 1.5rem;
+        }
+
+        .studio-body {
+            font-size: 0.9375rem;
+            color: var(--white-60);
+            line-height: 1.85;
+            margin-bottom: 1.5rem;
+            text-wrap: pretty;
+        }
+
+        .studio-body em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--chrome);
+        }
+
+        .studio-list {
+            list-style: none;
+            border-top: 1px solid rgba(236, 232, 223, 0.10);
+        }
+
+        .studio-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid rgba(236, 232, 223, 0.10);
+        }
+
+        .studio-item-label {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--white-50);
+        }
+
+        .studio-item-value {
+            font-size: 0.9375rem;
+            color: var(--chrome);
+        }
+
+        /* Contact — glass card */
+        .contact-shell {
+            padding: clamp(3rem, 6vw, 5rem);
+            border-radius: 2px;
+        }
+
+        .contact-body {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 4rem;
+            align-items: flex-end;
+            padding-top: 1rem;
+        }
+
+        .contact-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 7.5rem);
+            font-weight: 700;
+            line-height: 0.92;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #d8d4c8 0%, #ffffff 30%, #555 65%, #efeadb 92%, #888 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .contact-line-wrap {
+            display: block;
+            overflow: hidden;
+        }
+
+        .contact-line { display: block; }
+
+        .contact-line.italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 300;
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+
+        .contact-aside {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+
+        .contact-email {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--chrome);
+            position: relative;
+        }
+
+        .contact-email::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--chrome);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.45s var(--ease-out);
+        }
+
+        .contact-email:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .contact-note {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--white-50);
+            text-align: right;
+            max-width: 220px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1.7;
+        }
+
+        /* Footer reset for v2 */
+        .footer {
+            padding: 2rem var(--pad-x);
+            border-top: 1px solid rgba(236, 232, 223, 0.08);
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        /* =================================================================
+           HERO COMPOSITION VARIANTS
+           Body[data-hero-comp="X"] gates which one is visible.
+           ================================================================= */
+        .hero-comp { display: none; }
+        body[data-hero-comp="editorial"] .hero-comp--editorial,
+        body[data-hero-comp="poster"]    .hero-comp--poster,
+        body[data-hero-comp="anchored"]  .hero-comp--anchored,
+        body[data-hero-comp="spread"]    .hero-comp--spread { display: block; }
+
+        /* ---- Editorial (default) reuses .hero-inner-like layout ---- */
+        .hero-comp--editorial {
+            max-width: 1100px;
+            width: 100%;
+            display: none;                      /* overridden by the active selector above */
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        body[data-hero-comp="editorial"] .hero-comp--editorial {
+            display: flex;
+        }
+        body[data-hero-comp="editorial"] .hero {
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ---- POSTER (reference style) ----
+           Only corner type. Daisy gets to breathe. */
+        .hero-comp--poster {
+            position: absolute;
+            inset: var(--nav-h) var(--pad-x) clamp(2rem, 5vw, 4rem);
+            pointer-events: none;
+        }
+        .hero-comp--poster > * { pointer-events: auto; }
+
+        .poster-tl,
+        .poster-tr,
+        .poster-bl,
+        .poster-br {
+            position: absolute;
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.85);
+            text-shadow: 0 0 18px rgba(0, 0, 0, 0.95);
+        }
+
+        .poster-tl { top: 0; left: 0; max-width: 280px; }
+        .poster-tr { top: 0; right: 0; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+        .poster-bl { bottom: 0; left: 0; display: flex; align-items: center; gap: 0.75rem; }
+        .poster-br { bottom: 0; right: 0; text-align: right; opacity: 0.65; }
+
+        .poster-mark {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.10em;
+            color: var(--chrome);
+            margin-bottom: 0.75rem;
+        }
+
+        .poster-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            color: rgba(236, 232, 223, 0.55);
+            font-size: 0.5625rem;
+            letter-spacing: 0.18em;
+            line-height: 1.7;
+        }
+
+        .poster-num {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.14em;
+            color: var(--chrome);
+        }
+
+        .poster-glyph {
+            font-size: 0.875rem;
+            color: var(--chrome);
+            opacity: 0.7;
+            font-family: var(--font-serif);
+        }
+
+        .poster-sig {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 0.8125rem;
+            letter-spacing: 0;
+            text-transform: none;
+            color: rgba(236, 232, 223, 0.7);
+        }
+
+        .poster-dot {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--chrome);
+            font-size: 0;
+            opacity: 0.4;
+            box-shadow: 0 0 8px rgba(236, 232, 223, 0.4);
+        }
+
+        /* ---- ANCHORED (bottom-left huge title) ---- */
+        .hero-comp--anchored {
+            position: absolute;
+            inset: var(--nav-h) var(--pad-x) clamp(2rem, 5vw, 4rem);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-comp--anchored > * { pointer-events: auto; }
+
+        .anchored-tl {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .anchored-tr {
+            position: absolute;
+            top: 0;
+            right: 0;
+            text-align: right;
+        }
+
+        .anchored-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.5625rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.55);
+            line-height: 1.7;
+        }
+
+        .anchored-title {
+            position: absolute;
+            bottom: clamp(2.5rem, 5vh, 5rem);
+            left: 0;
+            right: 35%;
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8.5vw, 8rem);
+            font-weight: 700;
+            line-height: 0.86;
+            letter-spacing: 0.005em;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(180deg,
+                #d8d4c8 0%, #f7f3e7 18%, #ffffff 35%,
+                #ada9a0 52%, #535148 75%, #f3efe2 92%, #aaa69d 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 30px rgba(0, 0, 0, 0.9));
+            text-align: left;
+        }
+
+        .anchored-line {
+            display: block;
+            overflow: hidden;
+            padding-bottom: 0.05em;
+        }
+
+        .anchored-word {
+            display: inline-block;
+            margin-right: 0.18em;
+        }
+
+        .anchored-word.italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 300;
+            text-transform: none;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #cfcabe 0%, #ffffff 30%, #aaa69b 60%, #efeadb 90%, #807c72 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .anchored-aside {
+            position: absolute;
+            bottom: clamp(2.5rem, 5vh, 5rem);
+            right: 0;
+            max-width: 280px;
+            text-align: right;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            color: var(--white-60);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+
+        .anchored-aside em {
+            color: var(--chrome);
+            font-weight: 400;
+        }
+
+        .anchored-rule {
+            width: 40px;
+            height: 1px;
+            background: var(--chrome);
+        }
+
+        /* ---- SPREAD (magazine spread — title fragments frame the daisy) ----
+           Four oversized word-fragments anchored to each corner of the
+           viewport so the daisy sits inside a typographic frame. */
+        .hero-comp--spread {
+            position: absolute;
+            inset: var(--nav-h) var(--pad-x) clamp(2rem, 5vw, 4rem);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-comp--spread > * { pointer-events: auto; }
+
+        .spread-word {
+            position: absolute;
+            font-family: var(--font-display);
+            font-size: clamp(2.75rem, 7.5vw, 7rem);
+            font-weight: 700;
+            line-height: 0.86;
+            letter-spacing: 0.005em;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(180deg,
+                #d8d4c8 0%, #f7f3e7 18%, #ffffff 35%,
+                #ada9a0 52%, #535148 75%, #f3efe2 92%, #aaa69d 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 30px rgba(0, 0, 0, 0.9));
+        }
+
+        .spread-word.italic {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 300;
+            text-transform: none;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #cfcabe 0%, #ffffff 30%, #aaa69b 60%, #efeadb 90%, #807c72 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .spread-tl { top: clamp(2rem, 6vh, 4rem); left: 0;  text-align: left;  }
+        .spread-tr { top: clamp(2rem, 6vh, 4rem); right: 0; text-align: right; }
+        .spread-bl { bottom: clamp(3rem, 7vh, 5rem); left: 0;  text-align: left;  }
+        .spread-br { bottom: clamp(3rem, 7vh, 5rem); right: 0; text-align: right; }
+
+        /* Meta tucked between the corner words */
+        .spread-meta-top,
+        .spread-meta-bot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: rgba(236, 232, 223, 0.78);
+            text-shadow: 0 0 22px rgba(0, 0, 0, 0.95);
+            white-space: nowrap;
+        }
+
+        .spread-meta-top { top: 0; }
+        .spread-meta-bot { bottom: 0; }
+
+        .spread-meta-top .dot,
+        .spread-meta-bot .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--chrome);
+            box-shadow: 0 0 8px rgba(236, 232, 223, 0.7);
+        }
+
+        .spread-meta-bot em {
+            font-family: var(--font-serif);
+            font-style: italic;
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 1.15em;
+            color: var(--chrome-warm);
+        }
+
+        /* Hairline rules flanking the center meta — feels typeset */
+        .spread-meta-top::before,
+        .spread-meta-top::after,
+        .spread-meta-bot::before,
+        .spread-meta-bot::after {
+            content: '';
+            display: block;
+            width: clamp(40px, 8vw, 90px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(236,232,223,0.45), transparent);
+        }
+
+        /* =================================================================
+           TWEAKABLE DAISY POSITION + SCALE (driven by tweaks panel vars)
+           ================================================================= */
+        :root {
+            --daisy-y: 12%;
+            --daisy-scale: 1.0;
+            --daisy-x: 0%;
+        }
+
+        /* Override the static .subject-image rule with tweakable values */
+        .subject-image {
+            top: var(--daisy-y) !important;
+            left: calc(50% + var(--daisy-x)) !important;
+            transform: translateX(-50%) scale(var(--daisy-scale)) !important;
+            transform-origin: 50% 50%;
+        }
+
+        /* =================================================================
+           TWEAKS PANEL
+           ================================================================= */
+        .tweaks {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 2147483646;
+            width: 280px;
+            font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+            font-size: 11.5px;
+            color: #29261b;
+            background: rgba(250, 249, 247, 0.85);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            backdrop-filter: blur(24px) saturate(160%);
+            border: 0.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 12px 40px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+            display: none;
+        }
+        .tweaks.is-open { display: block; }
+
+        .tweaks-hd {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 8px 10px 14px;
+            user-select: none;
+        }
+        .tweaks-hd b { font-size: 12px; font-weight: 600; letter-spacing: 0.01em; }
+        .tweaks-x {
+            appearance: none; border: 0; background: transparent;
+            color: rgba(41, 38, 27, 0.55);
+            width: 22px; height: 22px; border-radius: 6px;
+            cursor: pointer; font-size: 14px; line-height: 1;
+        }
+        .tweaks-x:hover { background: rgba(0, 0, 0, 0.06); color: #29261b; }
+
+        .tweaks-body {
+            padding: 4px 14px 16px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+
+        .tweaks-sect {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            color: rgba(41, 38, 27, 0.5);
+            margin-top: 4px;
+        }
+
+        .tweaks-row { display: flex; flex-direction: column; gap: 6px; }
+        .tweaks-lbl {
+            display: flex; justify-content: space-between; align-items: baseline;
+            color: rgba(41, 38, 27, 0.78);
+        }
+        .tweaks-lbl > span:first-child { font-weight: 500; }
+        .tweaks-val { color: rgba(41, 38, 27, 0.5); font-variant-numeric: tabular-nums; }
+
+        .tweaks-seg {
+            display: flex;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .tweaks-seg button {
+            flex: 1;
+            appearance: none; border: 0; background: transparent;
+            padding: 6px 4px;
+            font: inherit;
+            font-size: 10.5px; font-weight: 500;
+            letter-spacing: 0.04em;
+            color: rgba(41, 38, 27, 0.6);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .tweaks-seg button:hover { color: #29261b; }
+        .tweaks-seg button.is-active {
+            background: #fff;
+            color: #29261b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+
+        .tweaks input[type="range"] {
+            appearance: none; -webkit-appearance: none;
+            width: 100%; height: 4px;
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 999px;
+            outline: 0;
+            margin: 4px 0;
+        }
+        .tweaks input[type="range"]::-webkit-slider-thumb {
+            appearance: none; -webkit-appearance: none;
+            width: 14px; height: 14px;
+            background: #29261b;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 0;
+        }
+        .tweaks input[type="range"]::-moz-range-thumb {
+            width: 14px; height: 14px;
+            background: #29261b;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 0;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 1100px) {
+            .work-list { grid-template-columns: repeat(2, 1fr); }
+            body[data-work-layout="rows"] .work-list { grid-template-columns: none; }
+            body[data-work-layout="scroller"] .work-list { grid-template-columns: none; }
+        }
+        @media (max-width: 720px) {
+            .project { grid-template-columns: 1fr; }
+            .work-list { grid-template-columns: 1fr; }
+            .studio-grid { grid-template-columns: 1fr; }
+            .contact-body { grid-template-columns: 1fr; gap: 3rem; }
+            .contact-aside { align-items: flex-start; }
+            .contact-note { text-align: left; }
+
+            .spread-word { font-size: clamp(2rem, 11vw, 4rem); }
+        }
+    </style>
+</head>
+<body data-hero-comp="spread" data-work-layout="scroller">
+
+    <!-- Persistent chrome subject + atmospheric layers -->
+    <div class="subject-stage" id="subject-stage" aria-hidden="true">
+        <div class="subject-bloom"></div>
+        <div class="subject-image" id="subject-image"></div>
+    </div>
+    <div class="subject-leak" aria-hidden="true"></div>
+    <div class="subject-flare" aria-hidden="true"></div>
+    <div class="void-veil" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="cursor" aria-hidden="true">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
+
+    <div class="page-transition" aria-hidden="true"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo" aria-label="T.Studio — home">
+                <span class="nav-logo-dot"></span>
+                <span>T·Studio</span>
+            </a>
+            <div class="nav-links" role="list">
+                <a href="#work" class="nav-link">Work</a>
+                <a href="#studio" class="nav-link">Studio</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO ============================================
+         Three composition variants live in the DOM; only the active
+         one is displayed (body[data-hero-comp] gates visibility).
+         ================================================== -->
+    <section class="hero" id="hero" aria-label="Introduction">
+
+        <!-- VARIANT 1 · EDITORIAL (centered, balanced) -->
+        <div class="hero-comp hero-comp--editorial" data-comp="editorial">
+            <div class="hero-marks">
+                <span>T·Studio</span>
+                <span class="dot"></span>
+                <span>Est. 2020</span>
+                <span class="dot"></span>
+                <span>HEL · WW</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-title-line"><span class="hero-word">Where</span></span>
+                <span class="hero-title-line"><span class="hero-word italic">Vision</span></span>
+                <span class="hero-title-line"><span class="hero-word">Becomes</span></span>
+                <span class="hero-title-line"><span class="hero-word italic">Form.</span></span>
+            </h1>
+            <div class="hero-meta">
+                <span class="hero-meta-line"></span>
+                <p class="hero-tagline">Design that commands attention · <em>Work built to endure</em></p>
+                <span class="hero-meta-line"></span>
+            </div>
+        </div>
+
+        <!-- VARIANT 2 · POSTER (reference style — corner type only, daisy commands frame) -->
+        <div class="hero-comp hero-comp--poster" data-comp="poster">
+            <div class="poster-tl">
+                <div class="poster-mark">T·Studio</div>
+                <div class="poster-meta">
+                    <div>An Independent Creative</div>
+                    <div>Studio · Est. 2020</div>
+                    <div>Helsinki / Worldwide</div>
+                </div>
+            </div>
+            <div class="poster-tr">
+                <div class="poster-num">№ 04 / 25</div>
+                <div class="poster-glyph" aria-hidden="true">◇</div>
+            </div>
+            <div class="poster-bl">
+                <span class="poster-sig">Made by ⏤ T·Studio</span>
+                <span class="poster-dot" aria-hidden="true">●</span>
+            </div>
+            <div class="poster-br">
+                <span>↗ Scroll to enter</span>
+            </div>
+        </div>
+
+        <!-- VARIANT 3 · ANCHORED (massive bottom-left title, meta bottom-right) -->
+        <div class="hero-comp hero-comp--anchored" data-comp="anchored">
+            <div class="anchored-tl">
+                <span class="poster-mark" style="font-family: &quot;JetBrains Mono&quot;">T·Studio</span>
+            </div>
+            <div class="anchored-tr">
+                <div class="anchored-meta">
+                    <div>KANG</div>
+                    <div>2026 / Q2</div>
+                </div>
+            </div>
+            <h1 class="anchored-title">
+                <span class="anchored-line">
+                    <span class="anchored-word">Where</span>
+                    <span class="anchored-word italic">Vision</span>
+                </span>
+                <span class="anchored-line">
+                    <span class="anchored-word">Becomes</span>
+                    <span class="anchored-word italic">Form.</span>
+                </span>
+            </h1>
+            <div class="anchored-aside">
+                <div class="anchored-rule" aria-hidden="true"></div>
+                <p style="opacity: 1">Design that commands attention.<br><em>Work built to endure.</em></p>
+            </div>
+        </div>
+
+        <!-- VARIANT 4 · SPREAD (magazine spread — title fragments frame the daisy) -->
+        <div class="hero-comp hero-comp--spread" data-comp="spread">
+            <div class="spread-meta-top">
+                <span>T·Studio</span>
+                <span class="dot"></span>
+                <span>Vol. 04</span>
+                <span class="dot"></span>
+                <span>MMXXV</span>
+            </div>
+            <h1 class="spread-word spread-tl">Where</h1>
+            <h1 class="spread-word italic spread-tr">Vision</h1>
+            <h1 class="spread-word spread-bl">Becomes</h1>
+            <h1 class="spread-word italic spread-br">Form.</h1>
+            <div class="spread-meta-bot">
+                <span>Helsinki · Worldwide</span>
+                <span class="dot"></span>
+                <em>Work built to endure</em>
+            </div>
+        </div>
+
+        <div class="hero-scroll" aria-hidden="true">
+            <span>Scroll</span>
+            <div class="hero-scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="work" id="work" aria-label="Selected work">
+        <div class="work-inner">
+            <header class="section-header">
+                <span class="section-label">Selected Work</span>
+                <span class="section-count">03 / Projects</span>
+            </header>
+
+            <div class="work-list" role="list">
+
+                <article class="project" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image" data-label="NOIR.COLLECTIVE · 2024" role="img" aria-label="Noir Collective" style="background-size: auto"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">01</span>
+                            <span class="project-year">2024 / 01</span>
+                        </div>
+                        <h2 class="project-title">Noir <span class="italic">Collective</span></h2>
+                        <p class="project-category">Brand Identity · Digital</p>
+                        <p class="project-excerpt">A full brand system for an independent cultural collective. Identity built around <em>duality</em> — light within darkness.</p>
+                        <a href="#" class="project-cta">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="project" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image" data-label="OBSIDIAN.HOTEL · 2024" role="img" aria-label="Obsidian Hotel"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">02</span>
+                            <span class="project-year">2024 / 02</span>
+                        </div>
+                        <h2 class="project-title">Obsidian <span class="italic">Hotel</span></h2>
+                        <p class="project-category">Hospitality · Web Experience</p>
+                        <p class="project-excerpt">An immersive digital presence for a boutique hotel. Where the site feels as <em>considered</em> as the room itself.</p>
+                        <a href="#" class="project-cta">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="project" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image" data-label="ATELIER.VOSS · 2023" role="img" aria-label="Atelier Voss"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">03</span>
+                            <span class="project-year">2023 / 03</span>
+                        </div>
+                        <h2 class="project-title">Atelier <span class="italic">Voss</span></h2>
+                        <p class="project-category">Fashion · Editorial Campaign</p>
+                        <p class="project-excerpt">Season-defining campaign for an independent fashion house. <em>Photography</em> direction, art direction, digital rollout.</p>
+                        <a href="#" class="project-cta">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="scroller-hint" aria-hidden="true" hidden>
+            </div>
+        </div>
+    </section>
+
+    <!-- STUDIO -->
+    <section class="studio" id="studio" aria-label="About the studio">
+        <div class="studio-inner">
+            <header class="section-header">
+                <span class="section-label">The Studio</span>
+                <span class="section-count">02 / Manifesto</span>
+            </header>
+
+            <div class="glass studio-shell">
+                <div class="studio-statement">
+                    <blockquote class="studio-quote">
+                        Great design is not <span class="accent">decoration</span> — it is the <em>architecture of meaning.</em>
+                    </blockquote>
+                </div>
+
+                <div class="studio-grid">
+                    <div class="studio-text">
+                        <div class="studio-rule" aria-hidden="true"></div>
+                        <p class="studio-body">T.Studio is an independent creative studio working at the intersection of brand, digital, and spatial design. We partner with founders, brands, and institutions who understand the power of <em>restraint</em>.</p>
+                        <p class="studio-body">Every project begins with a single question: what should this make someone <em>feel</em>? From there, we build backwards — stripping away everything that does not serve that truth.</p>
+                    </div>
+                    <div class="studio-details">
+                        <dl class="studio-list">
+                            <div class="studio-item">
+                                <dt class="studio-item-label">Approach</dt>
+                                <dd class="studio-item-value">Minimal by intent, precise by discipline</dd>
+                            </div>
+                            <div class="studio-item">
+                                <dt class="studio-item-label">Clients</dt>
+                                <dd class="studio-item-value">Founders, luxury brands, cultural institutions</dd>
+                            </div>
+                            <div class="studio-item">
+                                <dt class="studio-item-label">Location</dt>
+                                <dd class="studio-item-value">Helsinki — Working globally</dd>
+                            </div>
+                            <div class="studio-item">
+                                <dt class="studio-item-label">Availability</dt>
+                                <dd class="studio-item-value">Selective — Q3 2025</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact" id="contact" aria-label="Contact">
+        <div class="contact-inner">
+            <header class="section-header">
+                <span class="section-label">Contact</span>
+                <span class="section-count">01 / Inquiry</span>
+            </header>
+
+            <div class="glass contact-shell">
+                <div class="contact-body">
+                    <h2 class="contact-title">
+                        <span class="contact-line-wrap"><span class="contact-line">Start a</span></span>
+                        <span class="contact-line-wrap"><span class="contact-line italic">conversation.</span></span>
+                    </h2>
+                    <div class="contact-aside">
+                        <a href="mailto:hello@tstudio.co" class="contact-email" style="width: 2000px">tuobusinesses@gmail.com
+</a>
+                        <p class="contact-note">We respond within 48 hours · serious inquiries only</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-inner">
+            <span class="footer-logo" aria-label="T.Studio">T·Studio</span>
+            <span class="footer-copy">&copy; 2025 / All Rights Reserved</span>
+            <nav class="footer-nav" aria-label="Social links">
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">Behance</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- GSAP + Lenis (Lenis used as smooth scroll source for parallax) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+    <script>
+    /* ---- TRUE PARALLAX ----
+       Subject layer is fixed to viewport AND translates upward as user scrolls,
+       at 0.40× the content scroll rate. Result: subject moves up half as fast,
+       creating a parallax slip between background and content.
+       NOTE: only translate — no scale — so this doesn't collide with any
+       entrance animations on the same element. */
+    (function parallax() {
+        const stage = document.getElementById('subject-stage');
+        if (!stage) return;
+
+        const DEFAULT = 0.25;
+        let ticking = false;
+
+        function update() {
+            const y = window.scrollY || window.pageYOffset;
+            const factor = (typeof window.__PARALLAX_FACTOR === 'number')
+                ? window.__PARALLAX_FACTOR
+                : DEFAULT;
+            stage.style.transform = `translate3d(0, ${-y * factor}px, 0)`;
+            ticking = false;
+        }
+
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(update);
+                ticking = true;
+            }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        update();
+    })();
+
+    /* Hero intro hook (called by main.js if present)
+       Subject stage is intentionally NOT animated here — its transform is
+       owned by the parallax loop, so GSAP from() on it would fight the
+       per-frame writes and leave opacity stuck. The daisy fades in via a CSS
+       transition on body load instead (see .subject-stage rule). */
+    window.heroIntro = function(tl) {
+        tl.from('.hero-marks', { y: 16, opacity: 0, duration: 0.7 }, '-=0.4');
+        tl.from('.hero-word', { y: '110%', duration: 1.0, stagger: 0.07, ease: 'power4.out' }, '-=0.4');
+        tl.from('.hero-meta', { y: 18, opacity: 0, duration: 0.8 }, '-=0.4');
+        tl.from('.hero-scroll', { y: 18, opacity: 0, duration: 0.7 }, '<+0.1');
+    };
+    </script>
+
+    <script src="js/main.js"></script>
+
+    <!-- ============================================================
+         WORK SCROLLER — auto-scroll with seamless loop + pause on hover
+         ============================================================ -->
+    <script>
+    (function workScroller() {
+        const list = document.querySelector('.work-list');
+        if (!list) return;
+
+        // Clone all project cards once for a seamless loop.
+        // Clones are hidden via CSS when layout != "scroller".
+        const originals = Array.from(list.querySelectorAll('.project'));
+        originals.forEach((node) => {
+            const clone = node.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            clone.dataset.clone = 'true';
+            // Strip any inline style left behind by GSAP's `from()` initial state
+            // on the source node — otherwise clones inherit opacity:0 / translateY(60px)
+            // and stay frozen because ScrollTrigger never targets them.
+            clone.removeAttribute('style');
+            list.appendChild(clone);
+        });
+
+        // Loop distance = offset from first original to first clone.
+        // Using scrollWidth/2 drifts because container padding throws the math off;
+        // this measures the actual position so the wrap is pixel-perfect.
+        let loopDist = 0;
+        function measure() {
+            const firstClone = list.querySelector('.project[data-clone="true"]');
+            if (firstClone) {
+                loopDist = firstClone.offsetLeft - originals[0].offsetLeft;
+            }
+        }
+        measure();
+        window.addEventListener('resize', measure);
+
+        const SPEED = 32;             // px / second
+        let lastT = performance.now();
+        let hoverPause = false;
+        let interactUntil = 0;        // pause auto-scroll briefly after user drags
+
+        list.addEventListener('mouseenter', () => { hoverPause = true; });
+        list.addEventListener('mouseleave', () => { hoverPause = false; });
+        // Narrow the pause area to the cards themselves — the list's full
+        // width (incl. gaps + padding) was triggering pauses on near-misses.
+        // Stricter check: pause only when the cursor is over an actual card.
+        list.addEventListener('mousemove', (e) => {
+            const card = e.target.closest('.project');
+            hoverPause = !!card;
+        });
+        list.addEventListener('wheel',       () => { interactUntil = performance.now() + 1500; }, { passive: true });
+        list.addEventListener('touchstart',  () => { interactUntil = performance.now() + 2500; }, { passive: true });
+        list.addEventListener('pointerdown', () => { interactUntil = performance.now() + 1500; });
+
+        function tick(t) {
+            const dt = Math.min((t - lastT) / 1000, 0.05);
+            lastT = t;
+
+            const layoutMode = document.body.getAttribute('data-work-layout');
+            const canRun =
+                layoutMode === 'scroller' &&
+                !hoverPause &&
+                performance.now() > interactUntil &&
+                !document.hidden &&
+                loopDist > 0;
+
+            if (canRun) {
+                list.scrollLeft += SPEED * dt;
+                // Wrap when we've traversed exactly one set of originals.
+                if (list.scrollLeft >= loopDist) {
+                    list.scrollLeft -= loopDist;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    })();
+    </script>
+
+    <!-- ============================================================
+         TWEAKS PANEL
+         ============================================================ -->
+    <aside class="tweaks" id="tweaks" aria-label="Tweaks panel" hidden>
+        <div class="tweaks-hd">
+            <b>Tweaks</b>
+            <button class="tweaks-x" id="tweaks-close" aria-label="Close">×</button>
+        </div>
+        <div class="tweaks-body">
+            <div class="tweaks-sect">Hero composition</div>
+            <div class="tweaks-row">
+                <div class="tweaks-seg" id="tw-heroComp" role="radiogroup" aria-label="Hero composition">
+                    <button type="button" data-val="editorial">Editorial</button>
+                    <button type="button" data-val="poster">Poster</button>
+                    <button type="button" data-val="anchored">Anchored</button>
+                    <button type="button" data-val="spread">Spread</button>
+                </div>
+            </div>
+
+            <div class="tweaks-sect">Work layout</div>
+            <div class="tweaks-row">
+                <div class="tweaks-seg" id="tw-workLayout" role="radiogroup" aria-label="Work layout">
+                    <button type="button" data-val="grid">Grid</button>
+                    <button type="button" data-val="rows">Rows</button>
+                    <button type="button" data-val="scroller">Scroll</button>
+                </div>
+            </div>
+
+            <div class="tweaks-sect">Daisy</div>
+            <div class="tweaks-row">
+                <div class="tweaks-lbl">
+                    <span>Vertical offset</span>
+                    <span class="tweaks-val" id="tw-daisyY-val">12%</span>
+                </div>
+                <input type="range" id="tw-daisyY" min="-10" max="40" step="1" value="12">
+            </div>
+            <div class="tweaks-row">
+                <div class="tweaks-lbl">
+                    <span>Horizontal offset</span>
+                    <span class="tweaks-val" id="tw-daisyX-val">0%</span>
+                </div>
+                <input type="range" id="tw-daisyX" min="-30" max="30" step="1" value="0">
+            </div>
+            <div class="tweaks-row">
+                <div class="tweaks-lbl">
+                    <span>Scale</span>
+                    <span class="tweaks-val" id="tw-daisyScale-val">1.00</span>
+                </div>
+                <input type="range" id="tw-daisyScale" min="60" max="160" step="2" value="100">
+            </div>
+
+            <div class="tweaks-sect">Parallax</div>
+            <div class="tweaks-row">
+                <div class="tweaks-lbl">
+                    <span>Background speed</span>
+                    <span class="tweaks-val" id="tw-parallax-val">0.25×</span>
+                </div>
+                <input type="range" id="tw-parallax" min="0" max="80" step="5" value="25">
+            </div>
+        </div>
+    </aside>
+
+    <script>
+    /* ============================================================
+       TWEAKS — vanilla controller for B v2
+       Wires the host edit-mode protocol AND a self-contained panel.
+       Persists values via the EDITMODE-BEGIN block below.
+       ============================================================ */
+    (function tweaks() {
+        const DEFAULTS = /*EDITMODE-BEGIN*/{
+          "heroComp": "anchored",
+          "workLayout": "scroller",
+          "daisyY": 13,
+          "daisyX": 0,
+          "daisyScale": 100,
+          "parallax": 25
+        }/*EDITMODE-END*/;
+
+        const state = { ...DEFAULTS };
+
+        const root  = document.documentElement;
+        const body  = document.body;
+        const panel = document.getElementById('tweaks');
+
+        // Apply a state object to the DOM
+        function apply(s) {
+            body.setAttribute('data-hero-comp', s.heroComp);
+            body.setAttribute('data-work-layout', s.workLayout || 'grid');
+            root.style.setProperty('--daisy-y',     s.daisyY + '%');
+            root.style.setProperty('--daisy-x',     s.daisyX + '%');
+            root.style.setProperty('--daisy-scale', (s.daisyScale / 100).toFixed(2));
+            // expose parallax factor for the parallax loop to read
+            window.__PARALLAX_FACTOR = s.parallax / 100;
+            // Sync UI controls
+            document.querySelectorAll('#tw-heroComp button').forEach(b => {
+                b.classList.toggle('is-active', b.dataset.val === s.heroComp);
+            });
+            document.querySelectorAll('#tw-workLayout button').forEach(b => {
+                b.classList.toggle('is-active', b.dataset.val === (s.workLayout || 'grid'));
+            });
+            document.getElementById('tw-daisyY').value = s.daisyY;
+            document.getElementById('tw-daisyY-val').textContent = s.daisyY + '%';
+            document.getElementById('tw-daisyX').value = s.daisyX;
+            document.getElementById('tw-daisyX-val').textContent = s.daisyX + '%';
+            document.getElementById('tw-daisyScale').value = s.daisyScale;
+            document.getElementById('tw-daisyScale-val').textContent = (s.daisyScale / 100).toFixed(2);
+            document.getElementById('tw-parallax').value = s.parallax;
+            document.getElementById('tw-parallax-val').textContent = (s.parallax / 100).toFixed(2) + '×';
+        }
+
+        // Push edit to host (writes back to DEFAULTS on disk)
+        function pushEdit(patch) {
+            Object.assign(state, patch);
+            apply(state);
+            try {
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+            } catch (e) { /* standalone — fine */ }
+        }
+
+        // ---- Wire controls ----
+        document.querySelectorAll('#tw-heroComp button').forEach(b => {
+            b.addEventListener('click', () => pushEdit({ heroComp: b.dataset.val }));
+        });
+        document.querySelectorAll('#tw-workLayout button').forEach(b => {
+            b.addEventListener('click', () => pushEdit({ workLayout: b.dataset.val }));
+        });
+        document.getElementById('tw-daisyY').addEventListener('input', (e) => {
+            pushEdit({ daisyY: +e.target.value });
+        });
+        document.getElementById('tw-daisyX').addEventListener('input', (e) => {
+            pushEdit({ daisyX: +e.target.value });
+        });
+        document.getElementById('tw-daisyScale').addEventListener('input', (e) => {
+            pushEdit({ daisyScale: +e.target.value });
+        });
+        document.getElementById('tw-parallax').addEventListener('input', (e) => {
+            pushEdit({ parallax: +e.target.value });
+        });
+
+        // ---- Host protocol ----
+        function openPanel() {
+            panel.hidden = false;
+            panel.classList.add('is-open');
+        }
+        function closePanel() {
+            panel.classList.remove('is-open');
+            panel.hidden = true;
+            try {
+                window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+            } catch (e) {}
+        }
+
+        window.addEventListener('message', (e) => {
+            const t = e.data && e.data.type;
+            if (t === '__activate_edit_mode')   openPanel();
+            if (t === '__deactivate_edit_mode') closePanel();
+        });
+
+        document.getElementById('tweaks-close').addEventListener('click', closePanel);
+
+        // Apply initial state
+        apply(state);
+
+        // Announce availability (after listener is registered)
+        try {
+            window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+        } catch (e) {}
+
+        // Show panel by default — discoverable in canvas iframe AND standalone.
+        // User can close via the × button; the host can re-open via the Tweaks
+        // toolbar toggle (which sends __activate_edit_mode).
+        openPanel();
+    })();
+    </script>
+</body>
+</html>

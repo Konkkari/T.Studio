@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="T.Studio — Where vision becomes form. An independent creative studio for those who refuse ordinary.">
+    <title>T.Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Fluid Metal Background Canvas -->
+    <canvas id="fluid-bg" aria-hidden="true"></canvas>
+
+    <!-- Grain Overlay -->
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" aria-hidden="true">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
+
+    <!-- Page Transition Overlay -->
+    <div class="page-transition" aria-hidden="true"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo" aria-label="T.Studio — home">
+                <span class="nav-logo-mark">T.</span><span class="nav-logo-text">Studio</span>
+            </a>
+            <div class="nav-links" role="list">
+                <a href="#work" class="nav-link" role="listitem">Work</a>
+                <a href="#studio" class="nav-link" role="listitem">Studio</a>
+                <a href="#contact" class="nav-link nav-link--cta" role="listitem">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero" id="hero" aria-label="Introduction">
+        <div class="hero-inner">
+            <div class="hero-eyebrow">
+                <span class="hero-eyebrow-line"></span>
+                <span class="hero-eyebrow-text">Creative Studio &mdash; Est. 2020</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-title-line">
+                    <span class="hero-word">Where</span><span class="hero-word italic">Vision</span>
+                </span>
+                <span class="hero-title-line">
+                    <span class="hero-word">Becomes</span><span class="hero-word italic">Form.</span>
+                </span>
+            </h1>
+            <div class="hero-bottom">
+                <p class="hero-tagline">Design that commands attention.<br>Work built to endure.</p>
+                <div class="hero-scroll-indicator" aria-hidden="true">
+                    <span class="hero-scroll-text">Scroll</span>
+                    <div class="hero-scroll-line">
+                        <div class="hero-scroll-line-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow--2" aria-hidden="true"></div>
+    </section>
+
+    <!-- ==================== WORK ==================== -->
+    <section class="work" id="work" aria-label="Selected work">
+        <div class="work-inner">
+            <header class="section-header">
+                <span class="section-label">Selected Work</span>
+                <span class="section-count">03 Projects</span>
+            </header>
+
+            <div class="work-list" role="list">
+
+                <!-- Project 01 -->
+                <article class="project" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image project-image--01" role="img" aria-label="Noir Collective project visual"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">01</span>
+                            <span class="project-year">2024</span>
+                        </div>
+                        <h2 class="project-title">Noir Collective</h2>
+                        <p class="project-category">Brand Identity &mdash; Digital</p>
+                        <p class="project-excerpt">A full brand system for an independent cultural collective. Identity built around duality — light within darkness.</p>
+                        <a href="#" class="project-cta" aria-label="View Noir Collective case study">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project 02 -->
+                <article class="project project--reversed" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image project-image--02" role="img" aria-label="Obsidian Hotel project visual"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">02</span>
+                            <span class="project-year">2024</span>
+                        </div>
+                        <h2 class="project-title">Obsidian Hotel</h2>
+                        <p class="project-category">Hospitality &mdash; Web Experience</p>
+                        <p class="project-excerpt">An immersive digital presence for a boutique hotel. Where the site feels as considered as the room itself.</p>
+                        <a href="#" class="project-cta" aria-label="View Obsidian Hotel case study">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project 03 -->
+                <article class="project" role="listitem">
+                    <div class="project-visual">
+                        <div class="project-image project-image--03" role="img" aria-label="Atelier Voss project visual"></div>
+                        <div class="project-image-sheen" aria-hidden="true"></div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-top">
+                            <span class="project-index" aria-hidden="true">03</span>
+                            <span class="project-year">2023</span>
+                        </div>
+                        <h2 class="project-title">Atelier Voss</h2>
+                        <p class="project-category">Fashion &mdash; Editorial Campaign</p>
+                        <p class="project-excerpt">Season-defining campaign for an independent fashion house. Photography direction, art direction, digital rollout.</p>
+                        <a href="#" class="project-cta" aria-label="View Atelier Voss case study">
+                            <span>View Case Study</span>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== STUDIO ==================== -->
+    <section class="studio" id="studio" aria-label="About the studio">
+        <div class="studio-inner">
+            <header class="section-header">
+                <span class="section-label">The Studio</span>
+            </header>
+
+            <div class="studio-statement">
+                <blockquote class="studio-quote">
+                    <em>We believe great design is not decoration &mdash; it is the architecture of meaning.</em>
+                </blockquote>
+            </div>
+
+            <div class="studio-grid">
+                <div class="studio-text">
+                    <div class="studio-rule" aria-hidden="true"></div>
+                    <p class="studio-body">T.Studio is an independent creative studio working at the intersection of brand, digital, and spatial design. We partner with founders, brands, and institutions who understand the power of restraint.</p>
+                    <p class="studio-body">Every project begins with a single question: what should this make someone <em>feel</em>? From there, we build backwards &mdash; stripping away everything that does not serve that truth.</p>
+                </div>
+                <div class="studio-details">
+                    <dl class="studio-list">
+                        <div class="studio-item">
+                            <dt class="studio-item-label">Approach</dt>
+                            <dd class="studio-item-value">Minimal by intent, precise by discipline</dd>
+                        </div>
+                        <div class="studio-item">
+                            <dt class="studio-item-label">Clients</dt>
+                            <dd class="studio-item-value">Founders, luxury brands, cultural institutions</dd>
+                        </div>
+                        <div class="studio-item">
+                            <dt class="studio-item-label">Location</dt>
+                            <dd class="studio-item-value">Helsinki &mdash; Working globally</dd>
+                        </div>
+                        <div class="studio-item">
+                            <dt class="studio-item-label">Availability</dt>
+                            <dd class="studio-item-value">Selective &mdash; Q3 2025</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT ==================== -->
+    <section class="contact" id="contact" aria-label="Contact">
+        <div class="contact-inner">
+            <header class="section-header">
+                <span class="section-label">Contact</span>
+            </header>
+
+            <div class="contact-body">
+                <h2 class="contact-title">
+                    <span class="contact-line-wrap"><span class="contact-line">Start a</span></span>
+                    <span class="contact-line-wrap"><span class="contact-line italic">conversation.</span></span>
+                </h2>
+                <div class="contact-aside">
+                    <a href="mailto:hello@tstudio.co" class="contact-email">hello@tstudio.co</a>
+                    <p class="contact-note">We respond within 48 hours.<br>Serious inquiries only, please.</p>
+                </div>
+            </div>
+        </div>
+        <div class="contact-glow" aria-hidden="true"></div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-inner">
+            <span class="footer-logo" aria-label="T.Studio">T.Studio</span>
+            <span class="footer-copy">&copy; 2025 T.Studio. All rights reserved.</span>
+            <nav class="footer-nav" aria-label="Social links">
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">Behance</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Three.js (WebGL shader background) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis smooth scroll -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

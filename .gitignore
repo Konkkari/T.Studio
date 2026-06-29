@@ -1,0 +1,7 @@
+# Old design iterations / scratch — keep locally, don't deploy
+_archive/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini

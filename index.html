@@ -139,19 +139,10 @@
         background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.9) 100%);
     }
 
-    .grain {
-        position: fixed;
-        inset: 0; z-index: 2; pointer-events: none;
-        opacity: 0.045;
-        mix-blend-mode: overlay;
-        background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    }
-
     /* Content sits above subject + atmosphere */
     .nav, .hero, .work, .studio, .contact, .footer { position: relative; z-index: 3; }
 
     /* ---------- Performance switches (see TUNING SWITCHES in the script) ---------- */
-    html.no-grain .grain { display: none; }
     html.no-cursor .cursor-dot, html.no-cursor .cursor-ring { display: none; }
     html.no-cursor body { cursor: auto; }
 
@@ -554,7 +545,6 @@
         <div class="subject-image" id="subject-image"></div>
     </div>
     <div class="void-veil" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
 
     <div class="cursor" aria-hidden="true">
         <div class="cursor-dot"></div>
@@ -637,12 +627,7 @@
                         </div>
                         <p class="project-category">Web Design · Plumbing &amp; Heating</p>
                         <p class="project-excerpt">A demo site for a Finnish heating &amp; plumbing company — built to turn local searches into <em>booked jobs</em>.</p>
-                        <a href="../plumbing%20site%20demo/index.html" target="_blank" rel="noopener" class="project-cta">
-                            <span>View Demo</span>
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
+                        <span class="project-cta">Client Demo</span>
                     </div>
                 </article>
 
@@ -781,14 +766,11 @@
        Each is independent, so you can isolate what costs performance.
        SMOOTH_SCROLL: Lenis smooth-scroll on/off.
        CUSTOM_CURSOR: the fancy dot+ring cursor (runs a loop every frame,
-                      uses a blend mode) on/off. Off = normal mouse pointer.
-       GRAIN:         the film-grain texture overlay (blend mode) on/off. */
+                      uses a blend mode) on/off. Off = normal mouse pointer. */
     const SMOOTH_SCROLL = false;
     const CUSTOM_CURSOR = false;
-    const GRAIN         = false;
     /* ================================================================ */
     if (!CUSTOM_CURSOR) document.documentElement.classList.add('no-cursor');
-    if (!GRAIN)         document.documentElement.classList.add('no-grain');
 
     /* ---- Parallax: daisy drifts up as you scroll ----
        Cheap now that the daisy uses a mask (no blend-mode/filter), so moving
